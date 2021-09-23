@@ -10,7 +10,7 @@
     "client": "npm start --prefix client",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "data:import": "node backend/seeder.js",
-    "data:des": "node backend/seeder.js -d"
+    "data:del": "node backend/seeder.js -d"
   },
   "author": "raj kushwaha",
   "license": "ISC",
@@ -18,7 +18,10 @@
     "bcryptjs": "^2.4.3",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
-    "mongoose": "^6.0.5"
+    "express-validator": "^6.12.1",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^6.0.5",
+    "redux-devtools-extension": "^2.13.9"
   },
   "devDependencies": {
     "concurrently": "^6.2.1",

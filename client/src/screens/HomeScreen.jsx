@@ -1,25 +1,24 @@
 import { Col, Row } from "react-bootstrap";
 import Product from "../component/Product";
-import { useEffect, useState } from "react";
-import axios from "axios";
+import { useEffect } from "react";
+import { connect } from "react-redux";
+import { getProducts } from "../actions/productActions";
 
 
-
-const HomeScreen = () => {
-  const [products, setProducts] = useState([]);
+const HomeScreen = ({ pro: {products, loading}, getProducts }) => {
+  
   useEffect(() => {
     getProducts();
 
     // eslint-disable-next-line
   }, [])
-  const getProducts = async() => {
-    try {
-      const res = await axios.get('/api/products');
-      setProducts(res.data);
-    } catch (err) {
-      
-    } 
+  
+  if(loading === false && products === null){
+    return(
+        <div>loading...</div>
+    )
   }
+
   return (
     <>
       <h3>Products lists</h3>
@@ -34,4 +33,8 @@ const HomeScreen = () => {
   );
 };
 
-export default HomeScreen;
+const mapStateToProps = state => ({
+    pro: state.products
+})
+
+export default connect(mapStateToProps, { getProducts })(HomeScreen);

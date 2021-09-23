@@ -1,28 +1,41 @@
-import { Button, Card, Col, Image, ListGroup, Row } from "react-bootstrap";
+import {
+  Button,
+  Card,
+  Col,
+  Form,
+  Image,
+  ListGroup,
+  Row,
+} from "react-bootstrap";
 import { Link } from "react-router-dom";
 import airtpods from "../images/airpods.jpg";
 import Rating from "../component/Rating";
-import axios from "axios";
+import { connect } from "react-redux";
 import { useEffect, useState } from "react";
+import { getSingleProduct } from "../actions/productActions";
+import { addToCart } from "../actions/cartActions";
 
-const ProductScreen = ({ match }) => {
-  
-  const [product, setProduct] = useState("")
-  
+const ProductScreen = ({
+  match,
+  pro: { product, loading, error },
+  getSingleProduct,
+  addToCart
+}) => {
+  const [qty, setQty] = useState(1);
   useEffect(() => {
-    getSingleProduct()
+    getSingleProduct(match.params.id);
 
     // eslint-disable-next-line
   }, [match]);
 
-  const getSingleProduct = async () => {
-       try {
-         const res = await axios.get(`/api/products/${match.params.id}`);
-         setProduct(res.data);
-       } catch (err) {
-         
-       }
+  const cartTriger = () => {
+    addToCart(product._id, qty)
   }
+
+  if (loading === false && product === null) {
+    return <div>Loading....</div>;
+  }
+
   return (
     <>
       <Link className="btn btn-light my-3" to="/">
@@ -62,15 +75,36 @@ const ProductScreen = ({ match }) => {
                 <Row>
                   <Col>Status: </Col>
                   <Col>
-                    {product.countInStock ? "In Stock" : "Out Of Stock"}
+                    {product.countInStock > 0 ? "In Stock" : "Out Of Stock"}
                   </Col>
                 </Row>
               </ListGroup.Item>
+              {product.countInStock > 0 && (
+                <ListGroup.Item>
+                  <Row>
+                    <Col>Qty :</Col>
+                    <Col>
+                      <Form.Control
+                        as="select"
+                        value={qty}
+                        onChange={(e) => setQty(e.target.value)}
+                      >
+                        {[...Array(product.countInStock).keys()].map((x) => (
+                          <option key={x + 1} value={x + 1}>
+                            {x + 1}
+                          </option>
+                        ))}
+                      </Form.Control>
+                    </Col>
+                  </Row>
+                </ListGroup.Item>
+              )}
               <ListGroup.Item>
                 <Button
                   type="button"
                   className="w-100"
                   disabled={product.countInStock === 0}
+                  onClick={ cartTriger }
                 >
                   Add To Cart
                 </Button>
@@ -82,5 +116,8 @@ const ProductScreen = ({ match }) => {
     </>
   );
 };
-
-export default ProductScreen;
+const mapStateToProps = (state) => ({
+  pro: state.products,
+  cart: state.cart
+});
+export default connect(mapStateToProps, { getSingleProduct, addToCart })(ProductScreen);
