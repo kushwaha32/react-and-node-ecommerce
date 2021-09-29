@@ -1,5 +1,5 @@
 import axios from "axios";
-import { AUTH_USER, LOGOUT_USER, REGISTER_USER } from "./types";
+import { AUTH_USER, LOGOUT_USER, REGISTER_USER, UPDATE_USER } from "./types";
 
 // user Login function
 
@@ -48,4 +48,24 @@ export const registerUser = (formData) => async (dispatch, getState) =>  {
      } catch (error) {
        
      }
+}
+
+// user update function
+
+const userUpdate = (id, formData) => async(dispatch, getState) => {
+      const config = {
+          headers: {
+            "Content-Type": "application/json"
+          }
+      }
+     try {
+         const res = await axios.put(`/api/user/${id}`, formData, config)
+         dispatch({
+           type:UPDATE_USER,
+           payload: res.data
+         })
+         
+        } catch (error) {
+        
+      }
 }
